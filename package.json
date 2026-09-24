@@ -1,0 +1,20 @@
+{
+  "name": "lambsafe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome extension that saves the deployed code of an AWS Lambda function before you change it in the console.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:e2e": "node e2e/run.js",
+    "check": "node scripts/check.js",
+    "package": "node scripts/check.js && mkdir -p dist && rm -f dist/lambsafe.zip && cd extension && zip -r -X ../dist/lambsafe.zip . -x '.*'"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

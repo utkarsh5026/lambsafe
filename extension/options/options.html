@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LambSafe settings</title>
+  <link rel="stylesheet" href="../ui/common.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="page">
+    <header class="row">
+      <img src="../icons/icon48.png" width="32" height="32" alt="">
+      <div>
+        <h1>LambSafe</h1>
+        <p class="muted">Keeps a copy of your deployed Lambda code before you change it in the AWS console.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>AWS credentials</h2>
+      <p>
+        LambSafe calls <code>lambda:GetFunction</code> to learn which version is deployed and to download it.
+        Credentials stay in this browser's local extension storage. They are never synced and are only sent to AWS.
+        Use a dedicated IAM user or role with only the policy below.
+      </p>
+      <details>
+        <summary>Minimal IAM policy</summary>
+        <div class="policy">
+          <textarea id="policy" rows="11" readonly></textarea>
+          <button id="copy-policy">Copy</button>
+        </div>
+      </details>
+
+      <ul id="profiles" class="profiles"></ul>
+
+      <form id="profile-form" class="grid" autocomplete="off">
+        <h3>Add credentials</h3>
+        <label>Name <input type="text" id="p-name" placeholder="e.g. prod account"></label>
+        <label>Access key ID <input type="text" id="p-key" required spellcheck="false" placeholder="AKIA…"></label>
+        <label>Secret access key <input type="password" id="p-secret" required spellcheck="false"></label>
+        <label>
+          Session token <span class="muted">(only for temporary / SSO credentials)</span>
+          <textarea id="p-token" rows="3" spellcheck="false"></textarea>
+        </label>
+        <div class="row">
+          <button type="submit" class="primary" id="p-save">Verify and save</button>
+          <span id="p-result" role="status"></span>
+        </div>
+        <p class="muted small">
+          Credentials are checked with STS GetCallerIdentity, which needs no permissions, to learn their account ID.
+          Saving credentials for an account that already has some replaces the old ones, which is how you refresh expired SSO credentials.
+        </p>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>When to back up</h2>
+      <p class="muted">
+        Every check asks AWS which version is deployed. A download only happens when that exact version
+        (by its <code>CodeSha256</code> hash) has not been saved before.
+      </p>
+      <label class="check">
+        <input type="checkbox" id="t-deploy">
+        <span><strong>Right before you deploy</strong><br>
+        <span class="muted">Deploy button, Ctrl/Cmd+Shift+U, or “Upload from” .zip / S3.</span></span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="t-edit">
+        <span><strong>When you start editing</strong> (recommended)<br>
+        <span class="muted">Typing in, or clicking into, the code editor. This saves the backup seconds or minutes before you can hit Deploy, so it is never a race.</span></span>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="t-open">
+        <span><strong>As soon as a function opens</strong><br>
+        <span class="muted">Also backs up functions you only look at.</span></span>
+      </label>
+      <label class="inline">
+        While editing, check for a newly deployed version every
+        <input type="number" id="recheck" min="1" max="120"> minutes
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Where backups go</h2>
+      <label>Folder inside your Downloads folder <input type="text" id="folder"></label>
+      <p class="muted small">Example: <code id="path-example"></code></p>
+      <label class="check">
+        <input type="checkbox" id="toasts">
+        <span>Show LambSafe messages on the AWS console page</span>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Download history</h2>
+      <p><span id="history-count">0</span> saved versions are remembered, so they are not downloaded again.</p>
+      <p class="muted small">
+        If you delete a backup file, LambSafe notices on the next check and downloads it again.
+        Forgetting the history makes every function download again on its next check. Files already on disk are not touched.
+      </p>
+      <button id="forget" class="danger">Forget download history</button>
+    </section>
+
+    <p id="saved" class="saved" role="status"></p>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

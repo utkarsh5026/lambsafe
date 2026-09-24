@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>LambSafe</title>
+  <link rel="stylesheet" href="../ui/common.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="row">
+    <img src="../icons/icon32.png" width="20" height="20" alt="">
+    <h1>LambSafe</h1>
+    <span class="spacer"></span>
+    <label class="row toggle" title="Back up automatically when you edit or deploy">
+      <input type="checkbox" id="enabled"> Auto backup
+    </label>
+  </header>
+
+  <main>
+    <section id="setup" class="callout" hidden>
+      <strong>Add AWS credentials to start.</strong>
+      <p>LambSafe needs read-only access (<code>lambda:GetFunction</code>) to download the deployed code.</p>
+      <button class="primary" data-open-options>Open settings</button>
+    </section>
+
+    <section>
+      <h2>This tab</h2>
+      <p id="no-function" class="muted">Open a Lambda function in the AWS console to see its backups here.</p>
+      <div id="function" hidden>
+        <div id="fn-name" class="fn-name mono"></div>
+        <div id="fn-meta" class="muted"></div>
+        <div id="fn-status" class="status"></div>
+        <div class="row actions">
+          <button class="primary" id="backup-now">Back up now</button>
+          <button id="download-again" hidden>Download again</button>
+        </div>
+        <h3>Saved versions <span id="version-count" class="muted"></span></h3>
+        <ul id="versions" class="list"></ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Recent backups</h2>
+      <ul id="recent" class="list"></ul>
+    </section>
+  </main>
+
+  <footer class="row">
+    <button class="link" id="open-folder">Open Downloads folder</button>
+    <span class="spacer"></span>
+    <button class="link" data-open-options>Settings</button>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
